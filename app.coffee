@@ -1,4 +1,5 @@
 express = require('express')
+logger = require('morgan')
 bodyParser = require('body-parser')
 path = require('path')
 
@@ -6,6 +7,7 @@ app = express()
 
 app.set('port', Number(process.env.PORT) or 3000)
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(logger('combined'))
 app.use(bodyParser.json())
 
 app.get '/', (req, res) ->

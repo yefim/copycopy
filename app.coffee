@@ -9,6 +9,7 @@ app.set('port', Number(process.env.PORT) or 3000)
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(logger('combined'))
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded())
 
 app.get '/', (req, res) ->
   res.status(200).end()

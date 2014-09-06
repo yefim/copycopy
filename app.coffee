@@ -13,9 +13,17 @@ app.use(bodyParser.json())
 app.get '/', (req, res) ->
   res.status(200).end()
 
+copy = null
 app.post '/', (req, res) ->
   console.log req.body
-  res.json(req.body)
+  copy = req.body.text
+  res.status(200).end()
+
+app.get '/mac', (req, res) ->
+  if copy
+    res.json({copy})
+  else
+    res.json({})
 
 app.listen app.get('port'), ->
   console.log 'Listening on http://localhost:3000/'

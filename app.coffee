@@ -21,7 +21,8 @@ app.post '/', (req, res) ->
 
 app.get '/mac', (req, res) ->
   if copy
-    res.json({copy})
+    res.json({text: copy})
+    copy = null
   else
     res.json({})
 

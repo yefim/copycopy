@@ -30,9 +30,20 @@ app.post '/', (req, res) ->
 
 app.post '/register', (req, res) ->
   authToken = req.body.authToken
-  device = req.body.device
-  redisClient.lpush(authToken, device)
+  if authToken
+    device = req.body.device
+    redisClient.lpush(authToken, device)
   res.status(200).end()
+
+app.get '/devices', (req, res) ->
+  authToken = req.query.authToken
+  if authToken
+    redisClient.lrange authToken, 0, -1, (err, devices) ->
+      res.status(500).end() if err
+      res.json({devices})
+  else
+    devices = []
+    res.json({devices})
 
 app.get '/mac', (req, res) ->
   if copy

@@ -2,15 +2,9 @@ express = require('express')
 logger = require('morgan')
 bodyParser = require('body-parser')
 path = require('path')
+devices = require('./devices')
 
 app = express()
-
-if process.env.REDISTOGO_URL
-  rtg = require("url").parse(process.env.REDISTOGO_URL)
-  redisClient = require("redis").createClient(rtg.port, rtg.hostname)
-  redisClient.auth(rtg.auth.split(":")[1])
-else
-  redisClient = require("redis").createClient()
 
 app.set('port', Number(process.env.PORT) or 3000)
 app.use(express.static(path.join(__dirname, 'public')))
@@ -21,25 +15,18 @@ app.use(bodyParser.urlencoded())
 copy = null
 app.post '/', (req, res) ->
   console.log req.body
-  authToken = req.body.authToken
   copy = req.body.text
-  res.status(200).end()
+  devices.get(req.body.authToken).then (devices) ->
+    for device in devices
+      console.log device
+    res.status(200).end()
 
 app.post '/register', (req, res) ->
-  authToken = req.body.authToken
-  if authToken
-    device = req.body.device
-    redisClient.lpush(authToken, device)
+  devices.register(req.body.authToken, req.body.device)
   res.status(200).end()
 
 app.get '/devices', (req, res) ->
-  authToken = req.query.authToken
-  if authToken
-    redisClient.lrange authToken, 0, -1, (err, devices) ->
-      res.status(500).end() if err
-      res.json({devices})
-  else
-    devices = []
+  devices.get(req.query.authToken).then (devices) ->
     res.json({devices})
 
 app.get '/mac', (req, res) ->

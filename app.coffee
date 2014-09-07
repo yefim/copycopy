@@ -19,13 +19,13 @@ app.post '/', (req, res) ->
   console.log req.body
   # only do this if they have a mac device
   # devices.setMacClipboard(req.body.authToken, req.body.text)
-  currentDevice = req.body.device
-  devices.get(req.body.authToken).then (devices) ->
+  currentDeviceToken = req.body.device
+  devices.get(req.body.authToken).then (deviceTokens) ->
     console.log devices
-    for device in devices
-      continue if device == currentDevice
-      if device.match(/^mac-/)
-        devices.setMacClipboard(device + req.body.authToken, req.body.text)
+    for deviceToken in deviceTokens
+      continue if deviceToken == currentDeviceToken
+      if deviceToken.match(/^mac-/)
+        devices.setMacClipboard(deviceToken + req.body.authToken, req.body.text)
     res.status(200).end()
 
 ###

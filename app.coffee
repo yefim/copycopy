@@ -15,7 +15,9 @@ app.use(bodyParser.urlencoded())
 copy = null
 app.post '/', (req, res) ->
   console.log req.body
-  copy = req.body.text
+  # only do this if they have a mac device
+  devices.setMacClipboard(req.body.authToken, req.body.text)
+  currentDevice = req.body.device
   devices.get(req.body.authToken).then (devices) ->
     for device in devices
       console.log device
@@ -30,11 +32,11 @@ app.get '/devices', (req, res) ->
     res.json({devices})
 
 app.get '/mac', (req, res) ->
-  if copy
-    res.json({text: copy})
-    copy = null
-  else
-    res.json({})
+  devices.getMacClipboard(req.query.authToken).then (text) ->
+    if text
+      res.json({text})
+    else
+      res.json({})
 
 app.listen app.get('port'), ->
   console.log 'Listening on http://localhost:3000/'

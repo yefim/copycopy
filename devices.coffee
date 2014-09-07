@@ -9,6 +9,8 @@ else
 
 redisClient_lrange = Promise.promisify(redisClient.lrange, redisClient)
 
+macify = (authToken) -> "#{authToken}-mac"
+
 module.exports =
   get: (authToken) ->
     if authToken
@@ -17,3 +19,14 @@ module.exports =
       return Promise.resolve([])
   register: (authToken, device) ->
     redisClient.lpush(authToken, device) if authToken
+  setMacClipboard: (authToken, text) ->
+    redisClient.set(macify(authToken), text) if authToken
+  getMacClipboard: (authToken) ->
+    return new Promise (resolve, reject) ->
+      return resolve() unless authToken
+      key = macify(authToken)
+      redisClient.multi()
+        .get(key)
+        .del(key)
+        .exec (err, [text, rest...]) ->
+          resolve(text)

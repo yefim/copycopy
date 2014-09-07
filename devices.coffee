@@ -20,10 +20,10 @@ module.exports =
   register: (authToken, device) ->
     redisClient.lpush(authToken, device) if authToken
   setMacClipboard: (macToken, text) ->
-    redisClient.set(macToken, text) if authToken
+    redisClient.set(macToken, text) if macToken
   getMacClipboard: (macToken) ->
     return new Promise (resolve, reject) ->
-      return resolve() unless authToken
+      return resolve() unless macToken
       redisClient.multi()
         .get(macToken)
         .del(macToken)

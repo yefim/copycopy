@@ -19,14 +19,13 @@ module.exports =
       return Promise.resolve([])
   register: (authToken, device) ->
     redisClient.lpush(authToken, device) if authToken
-  setMacClipboard: (authToken, text) ->
-    redisClient.set(macify(authToken), text) if authToken
-  getMacClipboard: (authToken) ->
+  setMacClipboard: (macToken, text) ->
+    redisClient.set(macToken, text) if authToken
+  getMacClipboard: (macToken) ->
     return new Promise (resolve, reject) ->
       return resolve() unless authToken
-      key = macify(authToken)
       redisClient.multi()
-        .get(key)
-        .del(key)
+        .get(macToken)
+        .del(macToken)
         .exec (err, [text, rest...]) ->
           resolve(text)

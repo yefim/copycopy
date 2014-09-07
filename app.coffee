@@ -21,6 +21,7 @@ app.post '/', (req, res) ->
   # devices.setMacClipboard(req.body.authToken, req.body.text)
   currentDevice = req.body.device
   devices.get(req.body.authToken).then (devices) ->
+    console.log devices
     for device in devices
       continue if device == currentDevice
       if device.match(/^mac-/)

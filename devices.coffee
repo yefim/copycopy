@@ -1,4 +1,6 @@
-Promise = require("bluebird")
+Promise = require('bluebird')
+gcm = require('node-gcm')
+config = require('./config.json')
 
 if process.env.REDISTOGO_URL
   rtg = require("url").parse(process.env.REDISTOGO_URL)
@@ -8,8 +10,8 @@ else
   redisClient = require("redis").createClient()
 
 redisClient_lrange = Promise.promisify(redisClient.lrange, redisClient)
-
-macify = (authToken) -> "#{authToken}-mac"
+sender = new gcm.Sender(config.gcmKey or process.env.GCM_KEY)
+sender_send = Promise.promisify(sender.send, sender)
 
 module.exports =
   get: (authToken) ->
@@ -29,3 +31,11 @@ module.exports =
         .del(macToken)
         .exec (err, [text, rest...]) ->
           resolve(text)
+  setAndroidClipboard: (androidTokens, text) ->
+    registrationIds = androidTokens.map (t) -> t.replace(/^android-/, '')
+    message = new gcm.Message(
+      data:
+        text: text
+    )
+    # message object, registrationIds array, number of retries
+    sender_send(message, registrationIds, 4)

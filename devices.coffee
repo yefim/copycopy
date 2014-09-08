@@ -3,7 +3,7 @@ gcm = require('node-gcm')
 try
   config = require('./config.json')
 catch e
-  # pass
+  config = {}
 
 if process.env.REDISTOGO_URL
   rtg = require("url").parse(process.env.REDISTOGO_URL)

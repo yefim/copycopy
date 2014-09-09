@@ -28,6 +28,7 @@ app.post '/', (req, res) ->
     # set every other clipboard
     for deviceToken in deviceTokens
       continue if deviceToken == currentDeviceToken
+      console.log deviceToken, currentDeviceToken
       if deviceToken.match(/^mac-/)
         devices.setMacClipboard(deviceToken + req.body.authToken, req.body.text)
     res.status(200).end()

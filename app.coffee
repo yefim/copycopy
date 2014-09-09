@@ -16,9 +16,6 @@ app.use(bodyParser.urlencoded(extended: true))
 { authToken, device, text }
 ###
 app.post '/', (req, res) ->
-  console.log req.body
-  # only do this if they have a mac device
-  # devices.setMacClipboard(req.body.authToken, req.body.text)
   currentDeviceToken = req.body.device
   devices.get(req.body.authToken).then (deviceTokens) ->
     # set Android clipboards
@@ -28,7 +25,6 @@ app.post '/', (req, res) ->
     # set every other clipboard
     for deviceToken in deviceTokens
       continue if deviceToken == currentDeviceToken
-      console.log deviceToken, currentDeviceToken
       if deviceToken.match(/^mac-/)
         devices.setMacClipboard(deviceToken + req.body.authToken, req.body.text)
     res.status(200).end()
